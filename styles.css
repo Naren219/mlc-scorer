@@ -341,21 +341,21 @@ body {
     transform: scale(1.1);
 }
 
-/* Round Navigation */
-.round-navigation {
+/* Day Navigation */
+.day-navigation {
     margin-bottom: 25px;
     padding-bottom: 20px;
     border-bottom: 1px solid var(--border-color);
 }
 
 @media (max-width: 768px) {
-    .round-navigation {
+    .day-navigation {
         margin-bottom: 15px;
         padding-bottom: 15px;
     }
 }
 
-.round-controls {
+.day-controls {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -364,13 +364,13 @@ body {
 }
 
 @media (max-width: 768px) {
-    .round-controls {
+    .day-controls {
         flex-direction: column;
         gap: 10px;
     }
 }
 
-.current-round {
+.current-day {
     font-size: 1.2rem;
     font-weight: 600;
     color: var(--primary-color);
@@ -378,30 +378,30 @@ body {
 }
 
 @media (max-width: 768px) {
-    .current-round {
+    .current-day {
         font-size: 1.1rem;
         order: -1;
     }
 }
 
-.round-info {
+.day-info {
     text-align: center;
     font-size: 0.9rem;
     color: var(--text-secondary);
 }
 
 @media (max-width: 768px) {
-    .round-info {
+    .day-info {
         font-size: 0.8rem;
     }
 }
 
-.round-info.completed {
+.day-info.completed {
     color: var(--success-color);
     font-weight: 500;
 }
 
-.round-info.in-progress {
+.day-info.in-progress {
     color: var(--warning-color);
     font-weight: 500;
 }
@@ -425,7 +425,8 @@ body {
     pointer-events: none;
 }
 
-.match-date-control {
+.match-date-control,
+.day-control {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -433,14 +434,16 @@ body {
 }
 
 @media (max-width: 768px) {
-    .match-date-control {
+    .match-date-control,
+    .day-control {
         flex-direction: column;
         align-items: stretch;
         gap: 8px;
     }
 }
 
-.match-date-control label {
+.match-date-control label,
+.day-control label {
     font-weight: 600;
     color: var(--primary-color);
     white-space: nowrap;
@@ -855,8 +858,8 @@ body {
     transform: scale(1.1);
 }
 
-/* Round Actions */
-.round-actions {
+/* Day Actions */
+.day-actions {
     text-align: center;
     padding-top: 20px;
     border-top: 1px solid var(--border-color);
@@ -867,7 +870,7 @@ body {
 }
 
 @media (max-width: 768px) {
-    .round-actions {
+    .day-actions {
         padding-top: 15px;
         gap: 10px;
         flex-direction: column;

@@ -1,11 +1,10 @@
-// Cricket Score Manager - Match Scheduler with Round Navigation
+// Cricket Score Manager - Match Scheduler with Day Navigation
 class CricketScoreManager {
     constructor() {
         this.teams = JSON.parse(localStorage.getItem('cricketTeams')) || [];
-        this.globalGamesPlayed = parseInt(localStorage.getItem('globalGamesPlayed')) || 0;
-        this.roundsData = JSON.parse(localStorage.getItem('roundsData')) || {};
-        this.currentRound = parseInt(localStorage.getItem('currentRound')) || 1;
-        this.viewingRound = this.currentRound; // Which round we're currently viewing
+        this.daysData = JSON.parse(localStorage.getItem('daysData')) || {};
+        this.currentDay = parseInt(localStorage.getItem('currentDay')) || 1;
+        this.viewingDay = this.currentDay; // Which day we're currently viewing
         this.matchHistory = JSON.parse(localStorage.getItem('cricketMatches')) || [];
         
         this.init();
@@ -14,17 +13,13 @@ class CricketScoreManager {
     init() {
         this.updateTeamsDisplay();
         this.updateTeamSelects();
-        this.updateRoundDisplay();
+        this.updateDayDisplay();
         this.updateScheduledMatches();
         this.updateStandingsDisplay();
         this.bindEvents();
         
-        // Set today's date as default
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('gameDate').value = today;
-        
-        // Set global games played input
-        document.getElementById('globalGamesPlayed').value = this.globalGamesPlayed;
+        // Set day number input
+        document.getElementById('dayNumber').value = this.viewingDay;
     }
 
     bindEvents() {
@@ -35,8 +30,8 @@ class CricketScoreManager {
         document.getElementById('teamPoints').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.addTeam();
         });
-        document.getElementById('globalGamesPlayed').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.updateGamesPlayed();
+        document.getElementById('dayNumber').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.changeDayNumber();
         });
         
         // Team selection change handlers
@@ -46,92 +41,79 @@ class CricketScoreManager {
 
     saveData() {
         localStorage.setItem('cricketTeams', JSON.stringify(this.teams));
-        localStorage.setItem('globalGamesPlayed', this.globalGamesPlayed.toString());
-        localStorage.setItem('roundsData', JSON.stringify(this.roundsData));
-        localStorage.setItem('currentRound', this.currentRound.toString());
+        localStorage.setItem('daysData', JSON.stringify(this.daysData));
+        localStorage.setItem('currentDay', this.currentDay.toString());
         localStorage.setItem('cricketMatches', JSON.stringify(this.matchHistory));
     }
 
-    getCurrentRoundMatches() {
-        if (!this.roundsData[this.viewingRound]) {
-            this.roundsData[this.viewingRound] = {
-                matches: [],
-                completed: false,
-                date: null
+    getCurrentDayMatches() {
+        if (!this.daysData[this.viewingDay]) {
+            this.daysData[this.viewingDay] = {
+                matches: []
             };
         }
-        return this.roundsData[this.viewingRound].matches;
+        return this.daysData[this.viewingDay].matches;
     }
 
-    setCurrentRoundMatches(matches) {
-        if (!this.roundsData[this.viewingRound]) {
-            this.roundsData[this.viewingRound] = {
-                matches: [],
-                completed: false,
-                date: null
+    setCurrentDayMatches(matches) {
+        if (!this.daysData[this.viewingDay]) {
+            this.daysData[this.viewingDay] = {
+                matches: []
             };
         }
-        this.roundsData[this.viewingRound].matches = matches;
+        this.daysData[this.viewingDay].matches = matches;
     }
 
-    isRoundCompleted(roundNumber) {
-        return this.roundsData[roundNumber] && this.roundsData[roundNumber].completed;
-    }
-
-    navigateRound(direction) {
-        const newRound = this.viewingRound + direction;
+    navigateDay(direction) {
+        const newDay = this.viewingDay + direction;
         
-        if (direction === -1 && newRound < 1) return;
-        if (direction === 1 && newRound > this.currentRound) return;
+        if (direction === -1 && newDay < 1) return;
+        if (direction === 1 && newDay > this.currentDay) return;
         
-        this.viewingRound = newRound;
-        this.updateRoundDisplay();
+        this.viewingDay = newDay;
+        this.updateDayDisplay();
         this.updateScheduledMatches();
     }
 
-    updateRoundDisplay() {
-        document.getElementById('currentRoundNumber').textContent = this.viewingRound;
+    updateDayDisplay() {
+        document.getElementById('currentDayNumber').textContent = this.viewingDay;
+        document.getElementById('dayNumber').value = this.viewingDay;
         
-        const roundStatus = document.getElementById('roundStatus');
         const schedulerControls = document.getElementById('schedulerControls');
-        const prevBtn = document.getElementById('prevRoundBtn');
-        const nextBtn = document.getElementById('nextRoundBtn');
+        const prevBtn = document.getElementById('prevDayBtn');
+        const nextBtn = document.getElementById('nextDayBtn');
         
         // Update navigation buttons
-        prevBtn.disabled = this.viewingRound <= 1;
-        nextBtn.disabled = this.viewingRound >= this.currentRound;
+        prevBtn.disabled = this.viewingDay <= 1;
+        nextBtn.disabled = false; // Allow navigating to future days
         
-        // Update round status and controls availability
-        if (this.viewingRound === this.currentRound) {
-            roundStatus.textContent = 'Current Round';
-            roundStatus.className = 'round-info';
-            schedulerControls.classList.remove('disabled');
-        } else if (this.isRoundCompleted(this.viewingRound)) {
-            roundStatus.textContent = 'Completed Round';
-            roundStatus.className = 'round-info completed';
-            schedulerControls.classList.add('disabled');
-        } else {
-            roundStatus.textContent = 'Past Round';
-            roundStatus.className = 'round-info';
-            schedulerControls.classList.add('disabled');
-        }
+        // All days are editable
+        schedulerControls.classList.remove('disabled');
     }
 
-    updateGamesPlayed() {
-        const newGamesPlayed = parseInt(document.getElementById('globalGamesPlayed').value) || 0;
-        this.globalGamesPlayed = newGamesPlayed;
+    changeDayNumber() {
+        const newDayNumber = parseInt(document.getElementById('dayNumber').value) || 1;
         
-        // Update all teams' games played to match global value
-        this.teams.forEach(team => {
-            team.games_played = this.globalGamesPlayed;
-            // Recalculate total points sum based on current points and new games played
-            team.total_points_sum = team.current_points * team.games_played;
-        });
+        if (newDayNumber < 1) {
+            alert('Day number must be 1 or greater');
+            document.getElementById('dayNumber').value = this.viewingDay;
+            return;
+        }
         
+        this.viewingDay = newDayNumber;
+        
+        // If navigating to a day beyond current day, update current day
+        if (newDayNumber > this.currentDay) {
+            this.currentDay = newDayNumber;
+        }
+        
+        this.updateDayDisplay();
+        this.updateScheduledMatches();
+        this.updateAddMatchButton();
         this.saveData();
-        this.updateStandingsDisplay();
-        this.showSuccessMessage(`Global games played updated to ${this.globalGamesPlayed}`);
     }
+
+
 
     addTeam() {
         const nameInput = document.getElementById('teamName');
@@ -154,8 +136,6 @@ class CricketScoreManager {
             id: Date.now(),
             name: name,
             current_points: points,
-            games_played: this.globalGamesPlayed,
-            total_points_sum: points * this.globalGamesPlayed,
             created_at: new Date().toISOString()
         };
 
@@ -175,9 +155,9 @@ class CricketScoreManager {
         if (confirm('Are you sure you want to delete this team?')) {
             this.teams = this.teams.filter(team => team.id !== teamId);
             
-            // Remove any scheduled matches involving this team from all rounds
-            Object.keys(this.roundsData).forEach(roundNumber => {
-                this.roundsData[roundNumber].matches = this.roundsData[roundNumber].matches.filter(match => 
+            // Remove any scheduled matches involving this team from all days
+            Object.keys(this.daysData).forEach(dayNumber => {
+                this.daysData[dayNumber].matches = this.daysData[dayNumber].matches.filter(match => 
                     match.team1.id !== teamId && match.team2.id !== teamId
                 );
             });
@@ -191,11 +171,9 @@ class CricketScoreManager {
     }
 
     updateAddMatchButton() {
-        if (this.viewingRound !== this.currentRound) return;
-        
         const team1Id = document.getElementById('team1Select').value;
         const team2Id = document.getElementById('team2Select').value;
-        const currentMatches = this.getCurrentRoundMatches();
+        const currentMatches = this.getCurrentDayMatches();
         
         // Check if we can add this match
         const canAdd = team1Id && team2Id && team1Id !== team2Id && 
@@ -213,8 +191,6 @@ class CricketScoreManager {
     }
 
     addMatch() {
-        if (this.viewingRound !== this.currentRound) return;
-        
         const team1Id = parseInt(document.getElementById('team1Select').value);
         const team2Id = parseInt(document.getElementById('team2Select').value);
 
@@ -223,7 +199,7 @@ class CricketScoreManager {
             return;
         }
 
-        const currentMatches = this.getCurrentRoundMatches();
+        const currentMatches = this.getCurrentDayMatches();
         
         // Check if this match is already scheduled
         const matchExists = currentMatches.some(match => 
@@ -252,10 +228,10 @@ class CricketScoreManager {
         };
 
         currentMatches.push(match);
-        this.setCurrentRoundMatches(currentMatches);
+        this.setCurrentDayMatches(currentMatches);
         this.saveData();
         this.updateScheduledMatches();
-        this.updateRoundActionsVisibility();
+        this.updateDayActionsVisibility();
 
         // Reset selects
         document.getElementById('team1Select').value = '';
@@ -264,107 +240,105 @@ class CricketScoreManager {
     }
 
     removeMatch(matchId) {
-        if (this.viewingRound !== this.currentRound) return;
+        if (this.viewingDay !== this.currentDay) return;
         
-        const currentMatches = this.getCurrentRoundMatches();
+        const currentMatches = this.getCurrentDayMatches();
         const updatedMatches = currentMatches.filter(match => match.id !== matchId);
-        this.setCurrentRoundMatches(updatedMatches);
+        this.setCurrentDayMatches(updatedMatches);
         this.saveData();
         this.updateScheduledMatches();
-        this.updateRoundActionsVisibility();
+        this.updateDayActionsVisibility();
     }
 
     selectWinner(matchId, teamId) {
-        if (this.viewingRound !== this.currentRound) return;
-        
-        const currentMatches = this.getCurrentRoundMatches();
+        const currentMatches = this.getCurrentDayMatches();
         const match = currentMatches.find(m => m.id === matchId);
         if (match) {
             match.winner = teamId;
-            this.setCurrentRoundMatches(currentMatches);
+            
+            // Immediately update team points when winner is selected
+            const prediction = this.calculateNewPoints(match.team1, match.team2, match.winner);
+            
+            // Update team 1
+            const team1Index = this.teams.findIndex(t => t.id === match.team1.id);
+            if (team1Index !== -1) {
+                this.teams[team1Index].current_points = prediction.team1.newPoints;
+            }
+            
+            // Update team 2
+            const team2Index = this.teams.findIndex(t => t.id === match.team2.id);
+            if (team2Index !== -1) {
+                this.teams[team2Index].current_points = prediction.team2.newPoints;
+            }
+            
+            this.setCurrentDayMatches(currentMatches);
             this.saveData();
             this.updateMatchDisplay(matchId);
-            this.updateRoundActionsVisibility();
+            this.updateTeamsDisplay();
+            this.updateTeamSelects();
+            this.updateStandingsDisplay();
+            this.updateDayActionsVisibility();
         }
     }
 
     calculateNewPoints(team1, team2, winnerId) {
-        const team1Copy = { ...team1 };
-        const team2Copy = { ...team2 };
+        // Formula: new team points = (current team points * day number + opponent points ± 100) / (day number + 1)
+        // Winner gets +100, loser gets -100
+        // Special case: if day number == 1, don't multiply by day number in numerator
         
-        const pointGap = Math.abs(team1.current_points - team2.current_points);
-        const isExceptionRule = pointGap > 100;
+        const dayNumber = this.currentDay;
         
         let team1NewPoints, team2NewPoints;
-        let team1Change, team2Change;
 
-        if (winnerId === team1.id) {
-            // Team 1 wins
-            if (isExceptionRule && team1.current_points > team2.current_points) {
-                // Higher-rated team wins - use exception rule (no change)
-                team1NewPoints = team1.current_points;
-                team1Change = 0;
+        if (dayNumber === 1) {
+            // Special case for day 1: don't multiply by day number
+            if (winnerId === team1.id) {
+                // Team 1 wins
+                team1NewPoints = (team1.current_points + team2.current_points + 100) / (dayNumber + 1);
+                team2NewPoints = (team2.current_points + team1.current_points - 100) / (dayNumber + 1);
             } else {
-                // Standard rule or lower-rated team wins
-                const newSum = team1Copy.total_points_sum + team2.current_points + 100;
-                const newGames = team1Copy.games_played + 1;
-                team1NewPoints = newSum / newGames;
-                team1Change = team1NewPoints - team1.current_points;
-            }
-            
-            if (isExceptionRule && team2.current_points < team1.current_points) {
-                // Lower-rated team loses - use exception rule (no change)
-                team2NewPoints = team2.current_points;
-                team2Change = 0;
-            } else {
-                // Standard rule
-                const newSum = team2Copy.total_points_sum + team1.current_points - 100;
-                const newGames = team2Copy.games_played + 1;
-                team2NewPoints = newSum / newGames;
-                team2Change = team2NewPoints - team2.current_points;
+                // Team 2 wins
+                team1NewPoints = (team1.current_points + team2.current_points - 100) / (dayNumber + 1);
+                team2NewPoints = (team2.current_points + team1.current_points + 100) / (dayNumber + 1);
             }
         } else {
-            // Team 2 wins
-            if (isExceptionRule && team2.current_points > team1.current_points) {
-                // Higher-rated team wins - use exception rule (no change)
-                team2NewPoints = team2.current_points;
-                team2Change = 0;
+            // General formula for day > 1
+            if (winnerId === team1.id) {
+                // Team 1 wins
+                team1NewPoints = (team1.current_points * dayNumber + team2.current_points + 100) / (dayNumber + 1);
+                team2NewPoints = (team2.current_points * dayNumber + team1.current_points - 100) / (dayNumber + 1);
             } else {
-                // Standard rule or lower-rated team wins
-                const newSum = team2Copy.total_points_sum + team1.current_points + 100;
-                const newGames = team2Copy.games_played + 1;
-                team2NewPoints = newSum / newGames;
-                team2Change = team2NewPoints - team2.current_points;
-            }
-            
-            if (isExceptionRule && team1.current_points < team2.current_points) {
-                // Lower-rated team loses - use exception rule (no change)
-                team1NewPoints = team1.current_points;
-                team1Change = 0;
-            } else {
-                // Standard rule
-                const newSum = team1Copy.total_points_sum + team2.current_points - 100;
-                const newGames = team1Copy.games_played + 1;
-                team1NewPoints = newSum / newGames;
-                team1Change = team1NewPoints - team1.current_points;
+                // Team 2 wins
+                team1NewPoints = (team1.current_points * dayNumber + team2.current_points - 100) / (dayNumber + 1);
+                team2NewPoints = (team2.current_points * dayNumber + team1.current_points + 100) / (dayNumber + 1);
             }
         }
+
+        // Calculate changes
+        const team1Change = team1NewPoints - team1.current_points;
+        const team2Change = team2NewPoints - team2.current_points;
+
+        // Round to 1 decimal place
+        team1NewPoints = Math.round(team1NewPoints * 10) / 10;
+        team2NewPoints = Math.round(team2NewPoints * 10) / 10;
+        const team1ChangeRounded = Math.round(team1Change * 10) / 10;
+        const team2ChangeRounded = Math.round(team2Change * 10) / 10;
 
         return {
             team1: {
                 newPoints: team1NewPoints,
-                change: team1Change
+                change: team1ChangeRounded
             },
             team2: {
                 newPoints: team2NewPoints,
-                change: team2Change
+                change: team2ChangeRounded
             },
-            isExceptionRule
+            isExceptionRule: false
         };
     }
 
     updateMatchDisplay(matchId) {
-        const currentMatches = this.getCurrentRoundMatches();
+        const currentMatches = this.getCurrentDayMatches();
         const match = currentMatches.find(m => m.id === matchId);
         if (!match) return;
 
@@ -412,121 +386,25 @@ class CricketScoreManager {
         }
     }
 
-    updateRoundActionsVisibility() {
-        const roundActions = document.getElementById('roundActions');
-        const currentMatches = this.getCurrentRoundMatches();
+    updateDayActionsVisibility() {
+        const dayActions = document.getElementById('dayActions');
+        const currentMatches = this.getCurrentDayMatches();
         const hasMatches = currentMatches.length > 0;
-        const hasWinners = currentMatches.some(match => match.winner);
         
-        // Only show round actions for current round
-        const showActions = this.viewingRound === this.currentRound && hasMatches;
-        roundActions.style.display = showActions ? 'block' : 'none';
-        
-        if (showActions) {
-            const processBtn = roundActions.querySelector('.btn-success');
-            if (processBtn) {
-                processBtn.disabled = !hasWinners;
-                processBtn.style.opacity = hasWinners ? '1' : '0.5';
-            }
-        }
+        // Show clear button only when there are matches
+        dayActions.style.display = hasMatches ? 'block' : 'none';
     }
 
-    clearRound() {
-        if (this.viewingRound !== this.currentRound) return;
-        
-        if (confirm('Clear all scheduled matches?')) {
-            this.setCurrentRoundMatches([]);
+    clearDay() {
+        if (confirm('Clear all scheduled matches for this day?')) {
+            this.setCurrentDayMatches([]);
             this.saveData();
             this.updateScheduledMatches();
-            this.updateRoundActionsVisibility();
+            this.updateDayActionsVisibility();
         }
     }
 
-    processRound() {
-        if (this.viewingRound !== this.currentRound) return;
-        
-        const currentMatches = this.getCurrentRoundMatches();
-        const matchesWithWinners = currentMatches.filter(match => match.winner);
-        
-        if (matchesWithWinners.length === 0) {
-            alert('No matches with winners selected');
-            return;
-        }
 
-        const gameDate = document.getElementById('gameDate').value;
-        if (!gameDate) {
-            alert('Please select a game date');
-            return;
-        }
-
-        let processedMatches = 0;
-
-        // Process each match with a winner
-        matchesWithWinners.forEach(match => {
-            const prediction = this.calculateNewPoints(match.team1, match.team2, match.winner);
-
-            // Update team 1
-            const team1Index = this.teams.findIndex(t => t.id === match.team1.id);
-            if (team1Index !== -1) {
-                this.teams[team1Index].games_played += 1;
-                this.teams[team1Index].total_points_sum += (match.winner === match.team1.id) ? 
-                    (prediction.isExceptionRule && match.team1.current_points > match.team2.current_points ? 
-                        match.team1.current_points : match.team2.current_points + 100) :
-                    (prediction.isExceptionRule && match.team1.current_points < match.team2.current_points ?
-                        match.team1.current_points : match.team2.current_points - 100);
-                this.teams[team1Index].current_points = prediction.team1.newPoints;
-            }
-
-            // Update team 2
-            const team2Index = this.teams.findIndex(t => t.id === match.team2.id);
-            if (team2Index !== -1) {
-                this.teams[team2Index].games_played += 1;
-                this.teams[team2Index].total_points_sum += (match.winner === match.team2.id) ? 
-                    (prediction.isExceptionRule && match.team2.current_points > match.team1.current_points ? 
-                        match.team2.current_points : match.team1.current_points + 100) :
-                    (prediction.isExceptionRule && match.team2.current_points < match.team1.current_points ?
-                        match.team2.current_points : match.team1.current_points - 100);
-                this.teams[team2Index].current_points = prediction.team2.newPoints;
-            }
-
-            // Record match in history (for data purposes, not displayed)
-            const historyMatch = {
-                id: Date.now() + Math.random(),
-                date: gameDate,
-                round: this.currentRound,
-                team1: { ...match.team1 },
-                team2: { ...match.team2 },
-                winner_id: match.winner,
-                prediction: prediction,
-                timestamp: new Date().toISOString()
-            };
-            this.matchHistory.unshift(historyMatch);
-
-            processedMatches++;
-        });
-
-        // Mark round as completed and set date
-        this.roundsData[this.currentRound].completed = true;
-        this.roundsData[this.currentRound].date = gameDate;
-
-        // Update global games played if any matches were processed
-        if (processedMatches > 0) {
-            this.globalGamesPlayed += 1;
-            this.currentRound += 1; // Move to next round
-            this.viewingRound = this.currentRound; // View the new current round
-            document.getElementById('globalGamesPlayed').value = this.globalGamesPlayed;
-        }
-
-        this.saveData();
-        this.updateTeamsDisplay();
-        this.updateStandingsDisplay();
-        this.updateRoundDisplay();
-        this.updateScheduledMatches();
-        this.updateRoundActionsVisibility();
-
-        // Show success message
-        this.showSuccessMessage(`Round ${this.currentRound - 1} completed! ${processedMatches} matches processed.`);
-    }
 
     showSuccessMessage(message) {
         const existingMessage = document.querySelector('.success-message');
@@ -590,37 +468,33 @@ class CricketScoreManager {
 
     updateScheduledMatches() {
         const matchesList = document.getElementById('matchesList');
-        const currentMatches = this.getCurrentRoundMatches();
+        const currentMatches = this.getCurrentDayMatches();
         
         if (currentMatches.length === 0) {
             matchesList.innerHTML = `
                 <div class="empty-state">
                     <h3>No matches scheduled</h3>
-                    <p>${this.viewingRound === this.currentRound ? 'Add matches using the form above' : 'This round has no matches'}</p>
+                    <p>Add matches using the form above</p>
                 </div>
             `;
-            this.updateRoundActionsVisibility();
+            this.updateDayActionsVisibility();
             return;
         }
 
-        const isCurrentRound = this.viewingRound === this.currentRound;
-        const isCompleted = this.isRoundCompleted(this.viewingRound);
-
         matchesList.innerHTML = currentMatches.map(match => {
             const pointGap = Math.abs(match.team1.current_points - match.team2.current_points);
-            const isExceptionRule = pointGap > 100;
             
             return `
-                <div class="match-card ${isCompleted ? 'completed' : ''}" data-match-id="${match.id}">
+                <div class="match-card" data-match-id="${match.id}">
                     <div class="match-header">
                         <div class="match-teams">${match.team1.name} vs ${match.team2.name}</div>
-                        <div class="gap-indicator ${isExceptionRule ? 'gap-significant' : 'gap-normal'}">
-                            Gap: ${pointGap.toFixed(1)} ${isExceptionRule ? '(Exception Rule)' : '(Standard Rule)'}
+                        <div class="gap-indicator gap-normal">
+                            Gap: ${pointGap.toFixed(1)}
                         </div>
                     </div>
                     
                     <div class="match-selection">
-                        <div class="team-option ${!isCurrentRound ? 'disabled' : ''}" data-team="team1" onclick="cricketManager.selectWinner(${match.id}, ${match.team1.id})">
+                        <div class="team-option" data-team="team1" onclick="cricketManager.selectWinner(${match.id}, ${match.team1.id})">
                             <div class="team-name-large">${match.team1.name}</div>
                             <div class="team-points-large">${match.team1.current_points.toFixed(1)} pts</div>
                             <div class="prediction-display">
@@ -631,7 +505,7 @@ class CricketScoreManager {
                         
                         <div class="vs-divider">VS</div>
                         
-                        <div class="team-option ${!isCurrentRound ? 'disabled' : ''}" data-team="team2" onclick="cricketManager.selectWinner(${match.id}, ${match.team2.id})">
+                        <div class="team-option" data-team="team2" onclick="cricketManager.selectWinner(${match.id}, ${match.team2.id})">
                             <div class="team-name-large">${match.team2.name}</div>
                             <div class="team-points-large">${match.team2.current_points.toFixed(1)} pts</div>
                             <div class="prediction-display">
@@ -641,13 +515,11 @@ class CricketScoreManager {
                         </div>
                     </div>
                     
-                    ${isCurrentRound ? `
-                        <div class="match-actions">
-                            <button onclick="cricketManager.removeMatch(${match.id})" class="remove-match-btn" title="Remove match">
-                                ×
-                            </button>
-                        </div>
-                    ` : ''}
+                    <div class="match-actions">
+                        <button onclick="cricketManager.removeMatch(${match.id})" class="remove-match-btn" title="Remove match">
+                            ×
+                        </button>
+                    </div>
                 </div>
             `;
         }).join('');
@@ -659,7 +531,7 @@ class CricketScoreManager {
             }
         });
 
-        this.updateRoundActionsVisibility();
+        this.updateDayActionsVisibility();
     }
 
     updateStandingsDisplay() {
@@ -684,7 +556,6 @@ class CricketScoreManager {
                         <th>Rank</th>
                         <th>Team</th>
                         <th>Points</th>
-                        <th>Games</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -693,7 +564,6 @@ class CricketScoreManager {
                             <td>${index + 1}${index < 3 ? ['🥇', '🥈', '🥉'][index] : ''}</td>
                             <td><strong>${team.name}</strong></td>
                             <td>${team.current_points.toFixed(1)}</td>
-                            <td>${team.games_played}</td>
                         </tr>
                     `).join('')}
                 </tbody>
@@ -707,24 +577,22 @@ function addTeam() {
     cricketManager.addTeam();
 }
 
-function updateGamesPlayed() {
-    cricketManager.updateGamesPlayed();
+function changeDayNumber() {
+    cricketManager.changeDayNumber();
 }
 
 function addMatch() {
     cricketManager.addMatch();
 }
 
-function processRound() {
-    cricketManager.processRound();
+
+
+function clearDay() {
+    cricketManager.clearDay();
 }
 
-function clearRound() {
-    cricketManager.clearRound();
-}
-
-function navigateRound(direction) {
-    cricketManager.navigateRound(direction);
+function navigateDay(direction) {
+    cricketManager.navigateDay(direction);
 }
 
 // Initialize the application
