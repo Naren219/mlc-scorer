@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Score Manager</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="main-layout">
+            <!-- Left Column: Team Management & Settings -->
+            <div class="left-column">
+                <div class="settings-panel">
+                    <div class="games-played-control">
+                        <label for="globalGamesPlayed">Games Played:</label>
+                        <input type="number" id="globalGamesPlayed" min="0" value="0" class="input-field">
+                        <button onclick="updateGamesPlayed()" class="btn btn-primary">Update</button>
+                    </div>
+                </div>
+
+                <div class="team-management">
+                    <div class="add-team-form">
+                        <input type="text" id="teamName" placeholder="Team name" class="input-field">
+                        <input type="number" id="teamPoints" placeholder="Current points" step="0.1" class="input-field">
+                        <button onclick="addTeam()" class="btn btn-primary">Add Team</button>
+                    </div>
+                    
+                    <div class="teams-list" id="teamsList">
+                        <!-- Teams will be displayed here -->
+                    </div>
+                </div>
+
+                <div class="standings-display">
+                    <div class="standings-table" id="standingsTable">
+                        <!-- Standings will be displayed here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Match Scheduler -->
+            <div class="right-column">
+                <div class="match-scheduler">
+                    <div class="round-navigation">
+                        <div class="round-controls">
+                            <button onclick="navigateRound(-1)" class="btn btn-secondary" id="prevRoundBtn">‹ Previous</button>
+                            <div class="current-round">
+                                <span>Round <span id="currentRoundNumber">1</span></span>
+                            </div>
+                            <button onclick="navigateRound(1)" class="btn btn-secondary" id="nextRoundBtn">Next ›</button>
+                        </div>
+                        <div class="round-info">
+                            <span id="roundStatus">Current Round</span>
+                        </div>
+                    </div>
+
+                    <div class="scheduler-controls" id="schedulerControls">
+                        <div class="match-date-control">
+                            <label for="gameDate">Game Date:</label>
+                            <input type="date" id="gameDate" class="input-field">
+                        </div>
+                        
+                        <div class="add-match-form">
+                            <select id="team1Select" class="input-field">
+                                <option value="">Select Team 1</option>
+                            </select>
+                            <span class="vs-text">vs</span>
+                            <select id="team2Select" class="input-field">
+                                <option value="">Select Team 2</option>
+                            </select>
+                            <button onclick="addMatch()" class="btn btn-primary">Add Match</button>
+                        </div>
+                    </div>
+
+                    <div class="matches-container">
+                        <div class="matches-list" id="matchesList">
+                            <!-- Scheduled matches will appear here -->
+                        </div>
+                        
+                        <div class="round-actions" id="roundActions" style="display: none;">
+                            <button onclick="processRound()" class="btn btn-success">
+                                Process All Matches
+                            </button>
+                            <button onclick="clearRound()" class="btn btn-secondary">
+                                Clear All Matches
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
