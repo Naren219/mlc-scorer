@@ -234,16 +234,16 @@ class CricketScoreManager {
                     return `
                         <div class="matchup-row" draggable="true">
                             <div class="cell team">${team.name}</div>
-                            <div class="cell points">${team.current_points.toFixed(1)}</div>
+                            <div class="cell points">${Math.round(team.current_points)}</div>
                             <div class="cell winner">
-                                <button class="winner-btn short-btn ${matchup.winner === team.id ? 'selected' : ''}"
+                                <button class="winner-btn short-btn ${matchup.winner === team.id ? 'selected' : (matchup.winner && matchup.winner !== team.id ? 'loser-btn' : '')}"
                                         onclick="cricketManager.selectWinner(${matchup.id}, ${team.id})">
                                     Winner
                                 </button>
                             </div>
-                            <div class="cell new-points">${prediction ? newPoints : '-'}</div>
+                            <div class="cell new-points">${prediction ? Math.round(newPoints) : '-'}</div>
                             <div class="cell change">
-                                ${prediction ? `<div class="points-change ${change.startsWith('+') ? 'positive' : (change.startsWith('-') ? 'negative' : 'neutral')}">${change}</div>` : '-'}
+                                ${prediction ? `<div class=\"points-change ${change.startsWith('+') ? 'positive' : (change.startsWith('-') ? 'negative' : 'neutral')}\">${Math.round(Number(change))}</div>` : '-'}
                             </div>
                             <div class="cell actions">
                                 <i class="fas fa-grip-vertical drag-handle"></i>

@@ -1225,4 +1225,18 @@ body {
 .points-change.neutral {
     color: #64748b;
     /* gray */
+}
+
+.loser-btn {
+    background: #f3f4f6 !important;
+    color: #a0aec0 !important;
+    border-color: #e2e8f0 !important;
+    font-weight: 600;
+    cursor: not-allowed;
+    opacity: 0.85;
+}
+.loser-btn:focus, .loser-btn:hover {
+    background: #e5e7eb !important;
+    color: #a0aec0 !important;
+    border-color: #e2e8f0 !important;
 } 
