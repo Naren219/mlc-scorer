@@ -1,19 +1,22 @@
 :root {
-    --primary-color: #1e7e34;
+    --primary-color: #2563eb;
     --primary-light: #28a745;
-    --secondary-color: #ffc107;
+    --secondary-color: #64748b;
     --accent-color: #dc3545;
-    --success-color: #28a745;
+    --success-color: #22c55e;
     --warning-color: #fd7e14;
-    --background: #f8f9fa;
+    --danger-color: #ef4444;
+    --background-color: #f8fafc;
     --surface: #ffffff;
     --text-primary: #212529;
     --text-secondary: #6c757d;
-    --border-color: #dee2e6;
+    --border-color: #e2e8f0;
     --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.15);
     --border-radius: 12px;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --header-bg: #ffffff;
+    --row-hover: #f1f5f9;
 }
 
 * {
@@ -24,7 +27,7 @@
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-color: var(--background-color);
     min-height: 100vh;
     color: var(--text-primary);
     line-height: 1.6;
@@ -146,199 +149,77 @@ body {
 }
 
 /* Team Management */
+.teams-section {
+    margin-bottom: 2rem;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+}
+
 .add-team-form {
-    display: grid;
-    grid-template-columns: 2fr 1fr auto;
-    gap: 15px;
-    margin-bottom: 20px;
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
 }
 
-@media (max-width: 768px) {
-    .add-team-form {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-}
-
-.input-field {
-    padding: 12px 16px;
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: var(--transition);
-    font-family: inherit;
-    width: 100%;
-}
-
-@media (max-width: 768px) {
-    .input-field {
-        padding: 10px 12px;
-        font-size: 16px; /* Prevents zoom on iOS */
-    }
-}
-
-.input-field:focus {
-    outline: none;
-    border-color: var(--primary-light);
-    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
-}
-
-.btn {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
-    font-family: inherit;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    white-space: nowrap;
-    min-height: 44px; /* Minimum touch target */
-}
-
-@media (max-width: 768px) {
-    .btn {
-        padding: 10px 16px;
-        font-size: 0.9rem;
-        min-height: 44px;
-    }
-}
-
-.btn-primary {
-    background: var(--primary-light);
-    color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-    background: var(--primary-color);
-    transform: translateY(-1px);
-}
-
-.btn-success {
-    background: var(--success-color);
-    color: white;
-}
-
-.btn-success:hover:not(:disabled) {
-    background: #218838;
-    transform: translateY(-1px);
-}
-
-.btn-secondary {
-    background: var(--text-secondary);
-    color: white;
-}
-
-.btn-secondary:hover:not(:disabled) {
-    background: #5a6268;
-    transform: translateY(-1px);
-}
-
-.btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none !important;
-}
-
-/* Teams List */
 .teams-list {
     display: grid;
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-@media (max-width: 768px) {
-    .teams-list {
-        gap: 8px;
-    }
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
 }
 
 .team-item {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
-    padding: 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: var(--transition);
-}
-
-@media (max-width: 768px) {
-    .team-item {
-        padding: 12px;
-    }
+    padding: 0.75rem;
+    background: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    cursor: move;
+    transition: all 0.2s;
 }
 
 .team-item:hover {
-    border-color: var(--primary-light);
-    transform: translateY(-1px);
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .team-info {
-    display: flex;
-    flex-direction: column;
     flex: 1;
 }
 
 .team-name {
-    font-weight: 600;
-    color: var(--primary-color);
-    margin-bottom: 4px;
-    font-size: 1rem;
-}
-
-@media (max-width: 768px) {
-    .team-name {
-        font-size: 0.9rem;
-    }
+    font-weight: 500;
+    margin-bottom: 0.25rem;
 }
 
 .team-points {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-}
-
-@media (max-width: 768px) {
-    .team-points {
-        font-size: 0.8rem;
-    }
+    font-size: 0.875rem;
+    color: var(--secondary-color);
 }
 
 .delete-btn {
-    background: var(--accent-color);
-    color: white;
+    background: none;
     border: none;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
+    color: var(--danger-color);
+    font-size: 1.25rem;
     cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    min-width: 44px; /* Minimum touch target */
-    min-height: 44px;
-}
-
-@media (max-width: 768px) {
-    .delete-btn {
-        width: 36px;
-        height: 36px;
-        font-size: 14px;
-    }
+    padding: 0.25rem;
+    opacity: 0.5;
+    transition: opacity 0.2s;
 }
 
 .delete-btn:hover {
-    background: #c82333;
-    transform: scale(1.1);
+    opacity: 1;
+}
+
+.team-item.dragging {
+    opacity: 0.5;
+    background: var(--row-hover);
 }
 
 /* Day Navigation */
@@ -905,7 +786,7 @@ body {
 }
 
 .standings-table th {
-    background: var(--background);
+    background: var(--background-color);
     font-weight: 600;
     color: var(--primary-color);
     font-size: 0.9rem;
@@ -920,7 +801,7 @@ body {
 }
 
 .standings-table tr:hover {
-    background: var(--background);
+    background: var(--background-color);
 }
 
 .standings-table td {
@@ -1062,5 +943,207 @@ body {
     .btn {
         padding: 8px 12px;
         font-size: 0.85rem;
+    }
+}
+
+/* Spreadsheet always table/grid layout, scrollable on mobile */
+.spreadsheet-container {
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    width: 100%;
+}
+
+.spreadsheet-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 2fr 1fr 1fr 1fr;
+    background-color: var(--header-bg);
+    border-bottom: 2px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    text-align: center;
+    min-width: 700px;
+}
+
+.header-cell {
+    padding: 1rem;
+    font-weight: 700;
+    text-align: center;
+    border-right: 1px solid var(--border-color);
+    font-size: 1rem;
+    background: var(--background-color);
+    white-space: nowrap;
+}
+
+.header-cell:last-child {
+    border-right: none;
+}
+
+.spreadsheet-body {
+    max-height: calc(100vh - 300px);
+    overflow-y: auto;
+    min-width: 700px;
+}
+
+.matchup-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 2fr 1fr 1fr 1fr;
+    gap: 10px;
+    align-items: center;
+    padding: 12px 8px;
+    background: white;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    font-size: 1rem;
+}
+
+.matchup-row:hover {
+    background-color: #f8f9fa;
+}
+
+.matchup-row.dragging {
+    opacity: 0.5;
+    background-color: #e9ecef;
+}
+
+.cell {
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    word-break: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cell.team {
+    font-weight: 600;
+}
+
+.cell.points {
+    font-family: monospace;
+    font-size: 1.1em;
+}
+
+.winner-btn, .btn {
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 1rem;
+    min-width: 44px;
+    min-height: 44px;
+    border: 1px solid #dee2e6;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    font-weight: 600;
+}
+
+.winner-btn.selected, .btn-success {
+    background: #007bff;
+    color: white;
+    border-color: #0056b3;
+}
+
+.winner-btn:focus, .btn:focus, .delete-btn:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    color: var(--danger-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem 0.75rem;
+    opacity: 0.7;
+    border-radius: 50%;
+    transition: background 0.2s, opacity 0.2s;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-btn:hover, .delete-btn:focus {
+    background: #ffeaea;
+    opacity: 1;
+}
+
+.incomplete-row {
+    background: #f6f8fa !important;
+    opacity: 0.95;
+}
+
+.matchup-group {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 10px 0;
+}
+
+.matchup-group:last-child {
+    border-bottom: none;
+}
+
+.match-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+    .spreadsheet-container {
+        overflow-x: auto;
+    }
+    .spreadsheet-header, .spreadsheet-body {
+        min-width: 700px;
+    }
+    .header-cell, .cell {
+        font-size: 0.95rem;
+        padding: 0.75rem 0.5rem;
+    }
+    .winner-btn, .btn, .delete-btn {
+        min-width: 40px;
+        min-height: 40px;
+        font-size: 0.98rem;
+    }
+}
+
+/* Leaderboard view */
+.spreadsheet-container.leaderboard-view .spreadsheet-header,
+.spreadsheet-container.leaderboard-view .matchup-row {
+    grid-template-columns: 0.5fr 2fr 1fr;
+}
+
+.spreadsheet-container.leaderboard-view .header-cell,
+.spreadsheet-container.leaderboard-view .cell {
+    display: none;
+}
+
+.spreadsheet-container.leaderboard-view .header-cell.rank,
+.spreadsheet-container.leaderboard-view .header-cell.team,
+.spreadsheet-container.leaderboard-view .header-cell.points,
+.spreadsheet-container.leaderboard-view .cell.rank,
+.spreadsheet-container.leaderboard-view .cell.team,
+.spreadsheet-container.leaderboard-view .cell.points {
+    display: flex;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .spreadsheet-header,
+    .matchup-row {
+        grid-template-columns: 1.5fr 1fr 1.5fr 1fr 1fr 1fr 1fr 0.5fr;
+    }
+
+    .header-cell,
+    .cell {
+        padding: 0.75rem;
+        font-size: 0.875rem;
     }
 } 
