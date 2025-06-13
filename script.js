@@ -236,9 +236,9 @@ class CricketScoreManager {
                             <div class="cell team">${team.name}</div>
                             <div class="cell points">${team.current_points.toFixed(1)}</div>
                             <div class="cell winner">
-                                <button class="winner-btn ${matchup.winner === team.id ? 'selected' : ''}"
+                                <button class="winner-btn short-btn ${matchup.winner === team.id ? 'selected' : ''}"
                                         onclick="cricketManager.selectWinner(${matchup.id}, ${team.id})">
-                                    Select Winner
+                                    Winner
                                 </button>
                             </div>
                             <div class="cell new-points">${prediction ? newPoints : '-'}</div>
@@ -255,11 +255,11 @@ class CricketScoreManager {
                 // Apply button logic
                 let applyBtn = '';
                 if (matchup.winner && !matchup.applied) {
-                    applyBtn = `<button class="btn btn-success" onclick="cricketManager.applyMatchup(${matchup.id})">Apply</button>`;
+                    applyBtn = `<button class=\"btn btn-success short-btn\" onclick=\"cricketManager.applyMatchup(${matchup.id})\">Apply</button>`;
                 } else if (matchup.applied) {
-                    applyBtn = `<button class="btn btn-success" disabled>Applied</button>`;
+                    applyBtn = `<button class=\"btn btn-success short-btn\" disabled>Applied</button>`;
                 } else {
-                    applyBtn = `<button class="btn btn-success" disabled>Apply</button>`;
+                    applyBtn = `<button class=\"btn btn-success short-btn\" disabled>Apply</button>`;
                 }
 
                 return `

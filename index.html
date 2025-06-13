@@ -30,7 +30,9 @@
             <div class="add-team-form">
                 <input type="text" id="teamName" placeholder="Team name" class="input-field">
                 <input type="number" id="teamPoints" placeholder="Initial points" step="0.1" class="input-field">
-                <button onclick="addTeam()" class="btn btn-primary">Add Team</button>
+                <button onclick="addTeam()" class="btn btn-primary add-team-btn" aria-label="Add Team">
+                    <i class="fas fa-plus"></i>
+                </button>
             </div>
             <div id="teamsList" class="teams-list">
                 <!-- Teams will be displayed here -->
